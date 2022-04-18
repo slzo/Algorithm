@@ -16,29 +16,12 @@ struct KDT{
 KDT *root;
 //-------------------------------------------------------------
 
-//------------------构造Bin的优先队列------------------------
-struct Bin{
-    KDT*T;
-    long long distance;
-};
-bool operator < (Bin a, Bin b) { //重载运算符,已Bin.distance为基准对其进行排序
-    return a.distance < b.distance;
-}
-bool operator == (Bin a, Bin b) {
-    return a.distance == b.distance;
-}
-bool operator > (Bin a, Bin b) {
-    return a.distance > b.distance;
-}
-priority_queue<Bin, vector<Bin>, greater<Bin> > que;
-//-------------------------------------------------------------
-
 //-------------------------------------------------------------
 long long cal_len(Point X, Point Y) {
     return (X.x-Y.x)*(X.x-Y.x)+(X.y-Y.y)*(X.y-Y.y);
 }
-Point Target;
-long long min_dis;
+Point Target; //目标节点
+long long min_dis = 1000000000000000000;
 void KNN(KDT *T) { //平面最近搜索  递归进行查找
 	if (!T)
 		return;
@@ -49,7 +32,7 @@ void KNN(KDT *T) { //平面最近搜索  递归进行查找
 			KNN(T->left);
 		else
 			KNN(T->right); //先递归到叶子节点
-		if (min_dis > (Target.x - T->point.x)* (Target.x - T->point.x)) { //以当前的最小距为基准, 目标点的周边范围与目标点不在的另一半区域有交点, 需进入另一半寻找
+		if (min_dis > (Target.x - T->point.x)*(Target.x - T->point.x)) { //以当前的最小距为基准, 目标点的周边范围与目标点不在的另一半区域有交点, 需进入另一半寻找
 			if (Target.x < T->point.x)
 				KNN(T->right);
 			else
@@ -61,7 +44,7 @@ void KNN(KDT *T) { //平面最近搜索  递归进行查找
 			KNN(T->left);
 		else
 			KNN(T->right);
-		if (min_dis > (Target.y - T->point.y) *(Target.y - T->point.y)) {
+		if (min_dis > (Target.y - T->point.y)*(Target.y - T->point.y)) {
 			if (Target.y < T->point.y)
 				KNN(T->right);
 			else
@@ -112,6 +95,13 @@ int main() {
 		V[i] = p;
     }
     root = Built(0, n-1, 1);
-
+    int m;
+    cin >> m;
+    for(int i = 0; i < m; i++) {
+        cin >> Target.x >> Target.y;
+        min_dis = 1000000000000000000;
+        KNN(root);
+        cout << min_dis << endl;
+    }
     return 0;
 }
