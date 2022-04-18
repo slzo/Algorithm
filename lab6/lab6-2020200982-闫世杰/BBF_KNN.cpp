@@ -3,7 +3,6 @@
 #include <queue>
 #include <ctime>
 using namespace std;
-#define E_Max 20
 bool Flag;
 //------------------定义KDT的数据结构------------------------
 struct Point{
@@ -33,6 +32,7 @@ bool operator > (Bin a, Bin b) {
     return a.distance > b.distance;
 }
 priority_queue<Bin, vector<Bin>, greater<Bin> > que; //Bin优先队列,递增进行,每次取出队首元素即距离目标点最近的bin
+int E_Max= 20; //最大叶子检查数量
 //-------------------------------------------------------------
 
 //-------------------------------------------------------------
@@ -57,6 +57,8 @@ void KNN(KDT *T) { //平面最近搜索  递归进行查找
 	}
     long long d = cal_len(Target, T->point);
     min_dis = min_dis > d ? d : min_dis;
+	E_Max--;
+	if(!E_Max) Flag = 0;//检查节点个数达最大
 	if (T->D) { //当前节点根据x轴划分
 		long long l = (Target.x - T->point.x)* (Target.x - T->point.x);
 		if (Target.x < T->point.x) {
@@ -66,8 +68,6 @@ void KNN(KDT *T) { //平面最近搜索  递归进行查找
 					Bin tmp;
 					tmp.T = T->right; tmp.distance = l; //搜索左子树,同时将右子树压入bin的优先队列
 					que.push(tmp);
-					if(que.size() >= E_Max)
-						Flag = false;
 				}
 			KNN(T->left); //搜索左子树
 		}
@@ -77,8 +77,6 @@ void KNN(KDT *T) { //平面最近搜索  递归进行查找
 					Bin tmp;
 					tmp.T = T->left; tmp.distance = l; //搜索右子树,同时将左子树压入bin的优先队列
 					que.push(tmp);
-					if(que.size() >= E_Max)
-						Flag = false;
 				}
 			KNN(T->right);
 		}
@@ -91,8 +89,6 @@ void KNN(KDT *T) { //平面最近搜索  递归进行查找
 					Bin tmp;
 					tmp.T = T->right; tmp.distance = l; //搜索左子树,同时将右子树压入bin的优先队列
 					que.push(tmp);
-					if(que.size() >= E_Max)
-							Flag = false;
 				}
 			KNN(T->left);
 		}
@@ -102,8 +98,6 @@ void KNN(KDT *T) { //平面最近搜索  递归进行查找
 					Bin tmp;
 					tmp.T = T->left; tmp.distance = l; //搜索右子树,同时将左子树压入bin的优先队列
 					que.push(tmp);
-					if(que.size() >= E_Max)
-							Flag = false;
 				}
 			KNN(T->right);
 		}
